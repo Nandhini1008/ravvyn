@@ -1,0 +1,114 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+**/venv/
+**/env/
+**/ENV/
+**/wen/
+**/.venv/
+
+# Node modules
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment files - CRITICAL: Never commit these!
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Credentials and Secrets - CRITICAL: Never commit these!
+**/credentials/
+**/service-account.json
+**/*credentials*.json
+**/*secret*.json
+**/*key*.json
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# API Keys and Tokens (if accidentally created as files)
+*api_key*
+*secret*
+*token*
+*password*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+*.log.*
+logs/
+**/*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage/
+.nyc_output/
+
+# Build artifacts
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+.cache/
+
+test/
