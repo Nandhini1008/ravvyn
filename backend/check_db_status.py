@@ -58,7 +58,7 @@ def check_status():
         conn.close()
         
         # Check for your specific sheet
-        YOUR_SHEET_ID = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+        YOUR_SHEET_ID = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
         
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()

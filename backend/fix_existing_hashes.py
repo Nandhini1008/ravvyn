@@ -26,7 +26,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-DEFAULT_SHEET_ID = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+DEFAULT_SHEET_ID = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
 
 
 async def analyze_existing_hashes():

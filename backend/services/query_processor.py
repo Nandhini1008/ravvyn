@@ -23,7 +23,7 @@ class QueryProcessor:
     
     def __init__(self):
         """Initialize the query processor"""
-        self.default_sheet_id = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+        self.default_sheet_id = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
         self.data_service = get_data_retrieval_service()
         
         # Tab name mappings for common terms

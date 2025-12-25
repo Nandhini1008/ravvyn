@@ -22,7 +22,7 @@ class UniversalDataService:
     
     def __init__(self):
         """Initialize universal data service"""
-        self.default_sheet_id = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+        self.default_sheet_id = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
         self.analyzer = get_universal_analyzer()
         self._sheet_analyses = {}  # Cache for sheet analyses
     

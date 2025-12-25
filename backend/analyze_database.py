@@ -89,7 +89,7 @@ def analyze_database() -> Dict[str, Any]:
             analysis["hash_analysis"]["by_hash_type"] = hash_by_hash_type
             
             # Your specific sheet analysis
-            your_sheet_id = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+            your_sheet_id = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
             cursor.execute("SELECT COUNT(*) FROM file_hashes WHERE file_id = ?", (your_sheet_id,))
             your_sheet_hashes = cursor.fetchone()[0]
             analysis["hash_analysis"]["your_sheet_hashes"] = your_sheet_hashes

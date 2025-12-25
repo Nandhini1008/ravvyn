@@ -9,7 +9,7 @@ import os
 
 # Database path
 DB_PATH = "ravvyn.db"
-DEFAULT_SHEET_ID = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+DEFAULT_SHEET_ID = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
 
 def check_existing_hashes():
     """Check existing hash records in database"""

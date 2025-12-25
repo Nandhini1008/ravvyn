@@ -153,7 +153,7 @@ class ETPTankProcessor:
                 date_variations = self._generate_date_variations(date_str)
                 
                 # Build search query for ETP data
-                search_params = {'sheet_id': sheet_id or "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"}
+                search_params = {'sheet_id': sheet_id or "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"}
                 
                 # Create OR conditions for date matching
                 date_conditions = []

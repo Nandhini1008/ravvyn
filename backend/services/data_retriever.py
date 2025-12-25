@@ -23,7 +23,7 @@ class DataRetriever:
     def __init__(self):
         """Initialize the data retriever"""
         self.max_rows_per_query = 1000  # Limit to prevent overwhelming LLM
-        self.default_sheet_id = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+        self.default_sheet_id = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
     
     async def get_sheet_data_for_llm(self, sheet_id: str = None, tab_name: str = None, 
                                    limit: int = None, query_context: str = None) -> Dict[str, Any]:

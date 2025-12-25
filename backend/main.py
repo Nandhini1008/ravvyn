@@ -66,7 +66,7 @@ from datetime import datetime
 import time
 
 # CONFIGURATION: Your specific Google Sheet ID - Used as default throughout the application
-DEFAULT_SHEET_ID = "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8"
+DEFAULT_SHEET_ID = "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg"
 
 # Configure logging
 settings = get_settings()
@@ -152,13 +152,14 @@ async def startup_sync():
             except Exception as e:
                 logger.warning(f"⚠️  Your sheet processing failed to start: {str(e)} - will retry later")
             
-            # Priority 2: General sync for other sheets/docs (also non-blocking)
-            logger.info("🔄 Triggering general sync for other items...")
-            try:
-                asyncio.create_task(sync_service.sync_all(force=False))
-                logger.info("✅ General sync started in background")
-            except Exception as e:
-                logger.warning(f"⚠️  General sync failed to start: {str(e)}")
+            # Priority 2: General sync for other sheets/docs (DISABLED - only processing specific sheet)
+            # logger.info("🔄 Triggering general sync for other items...")
+            # try:
+            #     asyncio.create_task(sync_service.sync_all(force=False))
+            #     logger.info("✅ General sync started in background")
+            # except Exception as e:
+            #     logger.warning(f"⚠️  General sync failed to start: {str(e)}")
+            logger.info("⏭️  Skipping general sync - only processing specific sheet ID")
             
         except Exception as e:
             error_msg = str(e)
@@ -1162,7 +1163,7 @@ async def auto_sync_your_sheet(background_tasks: BackgroundTasks = BackgroundTas
 async def process_your_sheet(force_sync: bool = False, background_tasks: BackgroundTasks = BackgroundTasks()):
     """
     Process your specific sheet with full sync and hash computation
-    Uses the predefined sheet ID: 1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8
+    Uses the predefined sheet ID: 1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg
     """
     try:
         logger.info(f"🚀 Processing your sheet: {DEFAULT_SHEET_ID}")
@@ -1892,7 +1893,7 @@ async def test_data_structure():
                 "success": True,
                 "message": "Data structure verified",
                 "sample_data": {
-                    "raw_example": "9252|1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8|RO DETAILS|8|[\"11:00\", \"473\"]",
+                    "raw_example": "9252|1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg|RO DETAILS|8|[\"11:00\", \"473\"]",
                     "parsed_example": sample_row,
                     "data_summary": result["data_summary"],
                     "llm_context_preview": result["llm_context"][:500] + "..." if len(result["llm_context"]) > 500 else result["llm_context"]
@@ -2263,7 +2264,7 @@ async def _test_hash_write_lock_processing(sheet_id: str):
 @app.post("/process/my-sheet")
 async def process_my_sheet_now(background_tasks: BackgroundTasks = BackgroundTasks()):
     """
-    Immediately process your specific sheet: 1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8
+    Immediately process your specific sheet: 1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg
     This endpoint is hardcoded to your sheet ID and processes it immediately
     """
     
@@ -3506,8 +3507,9 @@ async def etp_tank_capacity(request: dict):
             
             ro3_column_idx = None
             salzberg_column_idx = None
+            uf_feed_tank_column_idx = None
             
-            # Find column indices for RO3 and Salzberg from header
+            # Find column indices for RO3, Salzberg, and UF Feed Tank from header
             for header_tuple in header_rows:
                 try:
                     header_data_str = header_tuple[1]
@@ -3516,6 +3518,10 @@ async def etp_tank_capacity(request: dict):
                         for i, cell in enumerate(header_data):
                             if cell:
                                 cell_str = str(cell).lower()
+                                # Search for UF Feed Tank Level
+                                if ('uf' in cell_str or 'uf feed' in cell_str) and ('feed' in cell_str or 'tank' in cell_str or 'level' in cell_str):
+                                    uf_feed_tank_column_idx = i
+                                    logger.info(f"Found UF Feed Tank Level at column {i}: {cell}")
                                 # Search for RO 3 Feed Tank Level
                                 if ('ro 3' in cell_str or 'ro3' in cell_str) and ('feed' in cell_str or 'tank' in cell_str or 'level' in cell_str):
                                     ro3_column_idx = i
@@ -3528,7 +3534,7 @@ async def etp_tank_capacity(request: dict):
                     logger.warning(f"Error processing header row: {e}")
                     continue
             
-            logger.info(f"RO 3 column index: {ro3_column_idx}, Salzberg column index: {salzberg_column_idx}")
+            logger.info(f"UF Feed Tank column index: {uf_feed_tank_column_idx}, RO 3 column index: {ro3_column_idx}, Salzberg column index: {salzberg_column_idx}")
             
             # Process RO DETAILS rows to extract storage values
             for row_tuple in matching_rows:
@@ -3545,6 +3551,13 @@ async def etp_tank_capacity(request: dict):
                     # Map row to fields to get storage values
                     mapped_fields = field_mapper.map_row_to_fields('RO DETAILS', row_data)
                     
+                    # Debug: Log row data structure and mapped fields
+                    logger.info(f"Row {row_index} - Total columns: {len(row_data)}, Column 3 value: {row_data[3] if len(row_data) > 3 else 'N/A'}")
+                    logger.info(f"Row {row_index} - Mapped fields keys: {list(mapped_fields.keys())}")
+                    logger.info(f"Row {row_index} - UF_FEED_TANK_LEVEL in mapped_fields: {'UF_FEED_TANK_LEVEL' in mapped_fields}")
+                    if 'UF_FEED_TANK_LEVEL' in mapped_fields:
+                        logger.info(f"Row {row_index} - UF_FEED_TANK_LEVEL value: {mapped_fields['UF_FEED_TANK_LEVEL']}")
+                    
                     # Extract storage values (divide by 1000 to convert to KL)
                     # NOTE: Division by 1000 is ONLY for ETP capacity queries
                     # All other queries return values as-is from the database
@@ -3558,15 +3571,54 @@ async def etp_tank_capacity(request: dict):
                         except (ValueError, TypeError):
                             pass
                     
-                    # UF Feed Tank - column 3
-                    if 'UF_FEED_TANK_LEVEL' in mapped_fields and mapped_fields['UF_FEED_TANK_LEVEL']:
-                        try:
-                            value = float(str(mapped_fields['UF_FEED_TANK_LEVEL']).replace(',', '')) / 1000
-                            if tanks_data["UF Feed Tank"]["storage"] == 0:
-                                tanks_data["UF Feed Tank"]["storage"] = value
-                                logger.info(f"Found UF Feed Tank storage: {value} KL")
-                        except (ValueError, TypeError):
-                            pass
+                    # UF Feed Tank - use header-detected column index (similar to RO3 and Salzberg)
+                    uf_feed_tank_found = False
+                    
+                    # First try: Use header-detected column index (most reliable)
+                    if uf_feed_tank_column_idx is not None and tanks_data["UF Feed Tank"]["storage"] == 0:
+                        if uf_feed_tank_column_idx < len(row_data) and row_data[uf_feed_tank_column_idx]:
+                            try:
+                                raw_value = str(row_data[uf_feed_tank_column_idx]).replace(',', '').strip()
+                                # Skip if it looks like a time value (contains ':')
+                                if raw_value and ':' not in raw_value:
+                                    value = float(raw_value) / 1000
+                                    tanks_data["UF Feed Tank"]["storage"] = value
+                                    logger.info(f"Found UF Feed Tank storage: {value} KL (from column {uf_feed_tank_column_idx}, raw value: {row_data[uf_feed_tank_column_idx]})")
+                                    uf_feed_tank_found = True
+                            except (ValueError, TypeError) as e:
+                                logger.warning(f"Error extracting UF Feed Tank from column {uf_feed_tank_column_idx}: {e}, raw value: {row_data[uf_feed_tank_column_idx] if uf_feed_tank_column_idx < len(row_data) else 'N/A'}")
+                    
+                    # Second try: Try column 3 if header detection didn't work (but skip time values)
+                    if not uf_feed_tank_found and tanks_data["UF Feed Tank"]["storage"] == 0 and len(row_data) > 3:
+                        if row_data[3] is not None and str(row_data[3]).strip():
+                            try:
+                                raw_value = str(row_data[3]).replace(',', '').strip()
+                                # Skip if it looks like a time value (contains ':')
+                                if raw_value and ':' not in raw_value:
+                                    value = float(raw_value) / 1000
+                                    tanks_data["UF Feed Tank"]["storage"] = value
+                                    logger.info(f"Found UF Feed Tank storage: {value} KL (from column 3 fallback, raw value: {row_data[3]})")
+                                    uf_feed_tank_found = True
+                            except (ValueError, TypeError) as e:
+                                logger.warning(f"Error extracting UF Feed Tank from column 3: {e}, raw value: {row_data[3]}")
+                    
+                    # Third try: Mapped field if column access didn't work (but skip time values)
+                    if not uf_feed_tank_found and tanks_data["UF Feed Tank"]["storage"] == 0:
+                        if 'UF_FEED_TANK_LEVEL' in mapped_fields and mapped_fields['UF_FEED_TANK_LEVEL']:
+                            try:
+                                raw_value = str(mapped_fields['UF_FEED_TANK_LEVEL']).replace(',', '').strip()
+                                # Skip if it looks like a time value (contains ':')
+                                if raw_value and ':' not in raw_value:
+                                    value = float(raw_value) / 1000
+                                    tanks_data["UF Feed Tank"]["storage"] = value
+                                    logger.info(f"Found UF Feed Tank storage: {value} KL (from mapped field, raw value: {mapped_fields['UF_FEED_TANK_LEVEL']})")
+                                    uf_feed_tank_found = True
+                            except (ValueError, TypeError) as e:
+                                logger.warning(f"Error extracting UF Feed Tank from mapped field: {e}, raw value: {mapped_fields.get('UF_FEED_TANK_LEVEL')}")
+                    
+                    # Final check: Log if still not found
+                    if not uf_feed_tank_found:
+                        logger.warning(f"UF Feed Tank storage NOT found for row {row_index}. Header column: {uf_feed_tank_column_idx}, Column 3: {row_data[3] if len(row_data) > 3 else 'N/A'}, Mapped UF_FEED_TANK_LEVEL: {mapped_fields.get('UF_FEED_TANK_LEVEL', 'NOT_IN_MAPPED_FIELDS')}")
                     
                     # RO 1 & 2 Feed Tank - column 7
                     if 'RO_1_2_FEED_TANK_LEVEL' in mapped_fields and mapped_fields['RO_1_2_FEED_TANK_LEVEL']:
@@ -3925,7 +3977,7 @@ async def process_complete_sheet(request: dict, background_tasks: BackgroundTask
     
     Request body:
     {
-        "sheet_id": "1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8",
+        "sheet_id": "1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg",
         "force_sync": false
     }
     """

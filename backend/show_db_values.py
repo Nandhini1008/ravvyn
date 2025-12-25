@@ -256,5 +256,5 @@ if __name__ == "__main__":
         print("\n" + "=" * 80)
         print("💡 Usage tips:")
         print("  • To see data for a specific file: python show_db_values.py YOUR_FILE_ID")
-        print("  • To see your sheet data: python show_db_values.py 1MtjJyKiDR7COszXxZF-wYR-UF5LcwYSpTfr_Aa_PEt8")
+        print("  • To see your sheet data: python show_db_values.py 1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg")
         print("  • Run the hash tests first if you don't see any data")

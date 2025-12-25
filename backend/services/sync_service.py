@@ -90,11 +90,24 @@ class SyncService:
                     # Re-raise other errors
                     raise
             
-            stats['total'] = len(sheets)
-            logger.info(f"Found {stats['total']} sheets to sync")
+            # Filter to only process the specific sheet ID
+            # Only sync the target sheet ID (1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg)
+            target_sheet_id = '1ajWB1qm5a_HedC9Bdo4w14RqLmiKhRzjkzzl3iCaLVg'
+            
+            # Filter sheets to only include the target sheet
+            filtered_sheets = [s for s in sheets if s['id'] == target_sheet_id]
+            
+            if len(sheets) != len(filtered_sheets):
+                logger.info(f"🔒 Filtered sheets: {len(sheets)} total, {len(filtered_sheets)} matching target sheet ID ({target_sheet_id})")
+                skipped_sheets = [s for s in sheets if s['id'] != target_sheet_id]
+                for skipped in skipped_sheets:
+                    logger.info(f"⏭️  Skipping sheet: {skipped['name']} ({skipped['id']}) - not the target sheet")
+            
+            stats['total'] = len(filtered_sheets)
+            logger.info(f"Found {stats['total']} sheets to sync (filtered to target sheet only)")
             
             # Process each sheet with its own database session
-            for idx, sheet in enumerate(sheets, 1):
+            for idx, sheet in enumerate(filtered_sheets, 1):
                 try:
                     sheet_id = sheet['id']
                     sheet_name = sheet['name']
